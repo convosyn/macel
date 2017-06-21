@@ -1,0 +1,7 @@
+Add mapFeature to linearReg.py
+	-this function will generate new features from already existing features and thus will 
+	provide a more smooth and fitting curve.
+
+	Issue:
+		I am not able to figure out how to determine unique terms for higher degree mapping
+		e.g. 4th or 5th order.
