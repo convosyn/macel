@@ -1,0 +1,6 @@
+pclass
+sex
+age
+sibsp
+parch
+embarked
