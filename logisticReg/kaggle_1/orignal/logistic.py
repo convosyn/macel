@@ -14,7 +14,6 @@ def fsigmoid(z):
 def foptim(init_theta, alpha, max_iters, *args):
 	X, y = args[0], args[1]
 	init_theta = init_theta.reshape((-1, 1))
-	#print("args obtained ...", args)
 	J = np.zeros((max_iters, 1))
 	for i in range(1,max_iters):
 		J[i] = fcost(init_theta, X, y)[0]
@@ -29,3 +28,4 @@ def fpredict(theta, X, threshold = 0.5):
 	theta = theta.reshape((-1, 1))
 	y = np.int8(fsigmoid(X.dot(theta)) >= threshold)
 	return y
+

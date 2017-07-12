@@ -12,7 +12,6 @@ def main(fin, optim, othresh, fout="final_pred.csv"):
 	m = data.shape[0]
 	X = np.column_stack([np.ones((m, 1)), X])
 	pred = logistic.fpredict(theta, X)
-	#print("accuracy: {!s}%".format(float(np.mean(pred[:, 0] == y)) * 100))
 	pid = np.array(data[:, 0], dtype=np.uint64)
 	to_save = list(zip(pid.flatten(), pred.flatten()))
 	to_save = pd.DataFrame(data=to_save, columns=["PassengerId", "Survived"])
