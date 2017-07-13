@@ -1,6 +1,6 @@
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#	simClev copyright (c) 2017.All rights resrved 	#
+#   simClev copyright (c) 2017.All rights resrved   #
 # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import numpy as np
