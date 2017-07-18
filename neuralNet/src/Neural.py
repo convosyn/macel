@@ -9,14 +9,19 @@ from matplotlib import pyplot as plt
 class Neural:
 
 	#TODO:
-	#1 - Add regularization to the cost and grad functions
+	#1 - Add regularization to the cost and grad functions  	X
 	#2 - add support for more than one hidden layers
-	#3 - Inbuilt support for train and validate
+	#3 - Inbuilt support for train and validate								
 	#4 - optimize the mimization function
 	#5 - Add support for more minimization algorithm types
-	#6 - test predictor
+	#6 - test predictor																				X
 
-	def __init__(self, number_of_hidden_layers = 1, alpha = 1e-3, epsilon = 1e-7, max_iters = 100, lambd = 1, hidden_layer_size = 75, debug_epsilon = 1e-4, init_epsilon = 1e-1*2):
+	#Caution the library has been tested on the simple datasets and is
+	#currently not reliable for complex tasks
+
+	def __init__(self, number_of_hidden_layers = 1, alpha = 1e-3,
+	 epsilon = 1e-7, max_iters = 100, lambd = 1, hidden_layer_size = 75,
+	  debug_epsilon = 1e-4, init_epsilon = 1e-1*2):
 		self.number_of_hidden_layers = number_of_hidden_layers
 		self.alpha = alpha
 		self.epsilon = epsilon
@@ -108,12 +113,16 @@ class Neural:
 		D2 /= m
 		D1 /= m
 
+
+		D2[:, 1:] += (self.lambd / m ) * Theta2[:, 1:]
+		D1[:, 1:] += (self.lambd / m ) * Theta1[:, 1:]
+
 		#print("back_prop_shapes: D1: {!s} {!s} {!s} {!s}".format(d2.shape, d3.shape, D1.shape, D2.shape))
 		#print("bac_prop_values: d2:\n{!s}\nd3:\n{!s}\nD1:\n{!s}\nD2:\n{!s}".format(d2, d3, D1, D2))
 
 		grad = np.column_stack([D1.reshape((1, -1)), D2.reshape((1, -1))]).reshape((1, -1))
 		return grad
-	
+
 	def _grad_function(self, X, y, Theta):
 		values = self._feed_forward(X, Theta)		
 		grad = self._back_prop(*values, Theta, X, y)
@@ -122,6 +131,14 @@ class Neural:
 	def _cost_function(self, X, y, Theta):
 		a3, _, _, _, m = self._feed_forward(X, Theta)
 		J = (-1/m) * np.sum((y * np.log(a3) + (1-y) * np.log(1 - a3)))
+		Theta = Theta.reshape((1, -1))
+		input_layer_size = self.input_layer_size
+		hidden_layer_size = self.hidden_layer_size
+		num_labels = self.num_labels
+		Theta1 = Theta[:, :hidden_layer_size * (input_layer_size + 1)].reshape((hidden_layer_size, input_layer_size + 1))
+		Theta2 = Theta[:, hidden_layer_size * (input_layer_size + 1):].reshape((num_labels, hidden_layer_size + 1))
+		_loss = (self.lambd / (2 * m)) * (np.sum(Theta1[:, 1:] ** 2) + np.sum(Theta2[:, 1:] ** 2))
+		J += _loss
 		return J
 
 	def _sigmoid(self, z):
@@ -162,7 +179,7 @@ class Neural:
 		fin_theta = fin_theta.reshape((-1, 1))
 		numgrad = np.zeros(fin_theta.shape)
 		perturb = np.zeros(fin_theta.shape)
-		print("final_theta_shape: {!s}".format(fin_theta.shape))
+		#print("final_theta_shape: {!s}".format(fin_theta.shape))
 		e = self.epsilon
 		for i in range(n):
 			perturb[i] = e
@@ -170,7 +187,7 @@ class Neural:
 			theta_down = fin_theta - perturb
 			numgrad[i] = (self._cost_function(X, y, theta_up) - self._cost_function(X, y, theta_down)) / (2 * e)
 			perturb[i] = 0
-
+			
 		grad = self._grad_function(X, y, fin_theta)
 		print("Similarity found: ")
 		print(np.column_stack([grad.reshape((-1, 1)), numgrad]))
