@@ -18,7 +18,7 @@ def func(y_dis):
             y_dis[i] = 5
     return y_dis
 
-def generate(variables = 5, epsilon_params = 10, epsilon_coef = 20, number_of_inst = 100, bias_term_coef = 5):
+def generate(variables = 4, epsilon_params = 10, epsilon_coef = 20, number_of_inst = 1000, bias_term_coef = 5):
     parameters = np.random.rand(variables+1, 1) * 2 * epsilon_params - epsilon_params
     X = np.random.rand(number_of_inst, variables) * 2 * epsilon_coef - epsilon_coef + bias_term_coef
     Xb = np.column_stack([np.ones((number_of_inst, 1)), X])

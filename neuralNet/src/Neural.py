@@ -13,10 +13,10 @@ class Neural:
 	#2 - add support for more than one hidden layers
 	#3 - Inbuilt support for train and validate								
 	#4 - optimize the mimization function
-	#5 - Add support for more minimization algorithm types
-	#6 - test predictor																				X
+	#5 - Add support for more minimization algorithm types  
+	#6 - test predictor									        X
 
-	#Caution the library has been tested on the simple datasets and is
+	#Caution: the library has been tested on the simple datasets and is
 	#currently not reliable for complex tasks
 
 	def __init__(self, number_of_hidden_layers = 1, alpha = 1e-3,
@@ -47,13 +47,13 @@ class Neural:
 		_temp = np.int0(np.tile(np.arange(_num_labels), m).reshape((m, _num_labels)) == np.tile(y.reshape((-1, 1)), _num_labels))
 		return _temp, _num_labels
 
-	def fit(self, X, y, perform_gradient_checking = True, plot_cost = True, show_cost = True):
+	def fit(self, X, y, perform_gradient_checking = False, plot_cost = False, show_cost = False, normalize=False):
 		y, self.num_labels = self._y_to_classifier(y)
 		self.input_layer_size = X.shape[1]
 		self.Theta = self._init_theta(self.input_layer_size, self.hidden_layer_size, self.num_labels)
 		self.Initial_Theta = self.Theta
-		
-		X = self._norm(X)
+		if normalize == True:
+			X = self._norm(X)
 		J = self._minimize(X, y)
 
 		if perform_gradient_checking is True:
@@ -113,7 +113,6 @@ class Neural:
 		D2 /= m
 		D1 /= m
 
-
 		D2[:, 1:] += (self.lambd / m ) * Theta2[:, 1:]
 		D1[:, 1:] += (self.lambd / m ) * Theta1[:, 1:]
 
@@ -130,7 +129,8 @@ class Neural:
 
 	def _cost_function(self, X, y, Theta):
 		a3, _, _, _, m = self._feed_forward(X, Theta)
-		J = (-1/m) * np.sum((y * np.log(a3) + (1-y) * np.log(1 - a3)))
+		#print("[Debug]: \n" + str(a3) + "\n");
+		J = (-1/m) * (y.T * np.log(a3) + (1-y.T) * np.log(1 - a3))
 		Theta = Theta.reshape((1, -1))
 		input_layer_size = self.input_layer_size
 		hidden_layer_size = self.hidden_layer_size
@@ -154,19 +154,20 @@ class Neural:
 		prev_cost = self._cost_function(X, y, theta)
 		#print("x:\n{!s}\ny:\n{!s}".format(X, y))
 		for i in range(self.max_iters):
-			print("current iteration: {!s}\r".format(i), end="")
+			print("current iteration: {!s}\r".format(i+1), end="")
 			theta -= self.alpha * self._grad_function(X, y, theta)
 			cur_cost = self._cost_function(X, y, theta)
 			J.append(cur_cost)
 			if(cur_cost < prev_cost and np.abs(prev_cost - cur_cost) < self.epsilon):
 				break
-
+		print("\nDone!")
 		self.Theta = theta
 
 		return J
 
 	def _norm(self, X):
-		return X - np.mean(X, axis=0)
+		X = X - np.mean(X, axis = 0)
+		return X 
 
 	def predict(self, X):
 		X = self._norm(X)
@@ -187,6 +188,7 @@ class Neural:
 			theta_down = fin_theta - perturb
 			numgrad[i] = (self._cost_function(X, y, theta_up) - self._cost_function(X, y, theta_down)) / (2 * e)
 			perturb[i] = 0
+		print("Done!")
 			
 		grad = self._grad_function(X, y, fin_theta)
 		print("Similarity found: ")
